@@ -1,105 +1,138 @@
-/*
-Integrantes:
-Encabezado:
-Fecha: 12/09/23
-*/
+// Colas (Queues).cpp : Este archivo contiene la función "main". La ejecución del programa comienza y termina ahí.
+//
 
 #include <iostream>
 #include <limits> 
 using namespace std;
 
-#include <iostream>
+/*
+    Hola bienvenido a este programa!
+    En este podran ver un ejemplo de la estructura de datos llamada Lista o LinkedList
+    la misma funciona con un sistema donde los elementos que van entrando son organizados de forma ascendente.
+    La misma puede realizar las operaciones Insertar, para agregar numeros a la Lista y Eliminar para eliminar un numero especifico
+    de la misma, incluyendo las demas coincidencias del mismo numero.
+    A esto se le agrega la capacidad de buscar un elemento en especifico y que muestre la posicion de la primera instancia del mismo.
 
-struct Nodo {
+    Integrantes:
+        1116783-Whisman Lorenzo
+        1116842-Jose Reyes
+        1105307-Jose Sol
+        1114056-Jose Florentino
+        1116176-Manuel Guzman
+        1115997-Winston Pichardo
+        1087257-Jorge Jimenez
+
+        Fecha: 12/9/2023
+*/
+
+struct LinkedList {
     int data;
-    Nodo* siguiente;
+    LinkedList* siguiente;
 };
 
-Nodo* head = nullptr;
+LinkedList* lista = nullptr;
+
+bool estaVacia() {
+    // Comprueba si el puntero "lista" apunta a nullptr, lo que indica que la lista está vacía.
+    return lista == nullptr; // Retorna true si lista está vacía y false si tiene un elemento.
+}
 
 void insertar(int value) {
-    Nodo* newNodo = new Nodo;
+    LinkedList* newNodo = new LinkedList;
     newNodo->data = value;
     newNodo->siguiente = nullptr;
 
-    if (head == nullptr || value < head->data) {
-        newNodo->siguiente = head;
-        head = newNodo;
-    } else {
-        Nodo* actual = head;
+    if (lista == nullptr || value < lista->data) {
+        newNodo->siguiente = lista;
+        lista = newNodo;
+    }
+    else {
+        LinkedList* actual = lista;
         while (actual->siguiente != nullptr && actual->siguiente->data < value) {
             actual = actual->siguiente;
         }
         newNodo->siguiente = actual->siguiente;
         actual->siguiente = newNodo;
     }
-    cout << "Nodo insertado correctamente." << endl;
+    cout << "\nNodo de valor " << value << " insertado correctamente." << endl;
 }
 
 void buscar(int value) {
-    Nodo* actual = head;
-    while (actual != nullptr) {
-        if (actual->data == value) {
-            cout << "El valor " << value << " fue encontrado en la lista." << endl;
+    int contador = 0;
+    LinkedList* aux = lista;
+    while (aux != nullptr) {
+        if (aux->data == value) {
+            cout << "\nEl valor " << value << " fue encontrado en la lista, en la posicion " << contador << "." << endl;
             return;
         }
-        actual = actual->siguiente;
+        aux = aux->siguiente;
+        contador++;
     }
-    cout << "El valor " << value << " no fue encontrado en la lista." << endl;
-}
-
-bool estaVacia() {
-    // Comprueba si el puntero "head" apunta a nullptr, lo que indica que la lista está vacía.
-    return head == nullptr; // Retorna true si la lista está vacía.
+    cout << "\nEl valor " << value << " no fue encontrado en la lista." << endl;
 }
 
 void eliminar(int value) {
-    if (estaVacia()) {
-        cout << "La lista está vacía, no se puede eliminar nada." << endl;
+    if (!estaVacia()) {
+
+        int contador = 0;
+
+        while (true)
+        {
+            LinkedList* temp;
+            LinkedList* anterior = nullptr;
+
+            temp = lista;
+
+            while (temp != nullptr && temp->data != value) {
+                anterior = temp;
+                temp = temp->siguiente;
+            }
+            if (temp == nullptr && contador != 0) {
+                break;
+            }
+            else if (temp == nullptr && contador == 0) {
+                cout << "\nNo se encontro el valor " << value << " en la lista." << endl;
+                break;
+            }
+            else if (anterior == nullptr) {
+                lista = lista->siguiente;
+                delete temp;
+                contador++;
+            }
+            else {
+                anterior->siguiente = temp->siguiente;
+                delete temp;
+                contador++;
+            }
+        }
+        if (contador != 0) {
+            cout << "\nSe elimino " << contador << " instancia/s del numero " << value << "." << endl;
+        }
+    }    
+    else {
         return;
-    }
-
-    if (head->data == value) {
-        Nodo* temp = head;
-        head = head->siguiente;
-        delete temp;
-        cout << "El valor " << value << " fue eliminado de la lista." << endl;
-        return;
-    }
-
-    Nodo* actual = head;
-    while (actual->siguiente != nullptr && actual->siguiente->data != value) {
-        actual = actual->siguiente;
-    }
-
-    if (actual->siguiente != nullptr) {
-        Nodo* temp = actual->siguiente;
-        actual->siguiente = actual->siguiente->siguiente;
-        delete temp;
-        cout << "El valor " << value << " fue eliminado de la lista." << endl;
-    } else {
-        cout << "El valor " << value << " no se encuentra en la lista." << endl;
-    }
+    }   
 }
 
 void display() {
     if (estaVacia()) {
-        std::cout << "La lista está vacía." << std::endl;
+        cout << "\nLa lista está vacía." << endl;
         return;
     }
 
-    Nodo* actual = head;
-    std::cout << "Lista Enlazada: ";
+    LinkedList* actual = lista;
+    cout << "\nLista Enlazada: ";
     while (actual != nullptr) {
-        std::cout << actual->data;
+        cout << actual->data;
         if (actual->siguiente != nullptr) {
-            std::cout << ", ";
-        } else {
-            std::cout << ".";
+            cout << ", ";
+        }
+        else {
+            cout << ".";
         }
         actual = actual->siguiente;
     }
-    std::cout << std::endl;
+    cout << std::endl;
 }
 
 // Función para solicitar al usuario si desea continuar.
@@ -123,7 +156,7 @@ bool continuar() {
 int obtener_valido() {
     int number;
     while (!(cin >> number)) {
-        cout << "Entrada inválida: " << endl;
+        cout << "\nEntrada inválida: ";
         cin.clear(); // Limpia el estado de error del flujo de entrada.
         cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Descarta la entrada errónea.
     }
@@ -144,53 +177,82 @@ void cls() {
 }
 
 int main() {
+    locale::global(locale("en_US.UTF-8"));
+
     int opcion;
 
     while (true) {
-        cout << "\nMenú:\n";
+        cout << "**********************" << endl;
+        cout << "\tMenú:\t\n";
+        cout << "**********************" << endl;
+
         cout << "1. Insertar\n";
         cout << "2. Buscar\n";
         cout << "3. Eliminar\n";
         cout << "4. Mostrar Lista\n";
         cout << "5. Salir\n";
-        cout << "Ingrese una opción: ";
+        cout << "**********************" << endl;
+        cout << "\nIngrese una opción: ";
         opcion = obtener_valido();
 
         switch (opcion) {
-            case 1: {
-                int valor;
-                cout << "Ingrese el valor a insertar: ";
-                valor = obtener_valido();
-                insertar(valor);
+        case 1: {
+            int valor;
+            cout << "\nIngrese el valor a insertar: ";
+            valor = obtener_valido();
+            insertar(valor);
+            cls();
+            break;
+        }
+        case 2: {
+            int valor;
+            if (estaVacia())
+            {
+                cout << "La lista esta vacia.\n" << endl;
                 cls();
                 break;
             }
-            case 2: {
-                int valor;
-                cout << "Ingrese el valor a buscar: ";
-                valor = obtener_valido();
-                buscar(valor);
+            cout << "Ingrese el valor a buscar: ";
+            valor = obtener_valido();
+            buscar(valor);
+            cls();
+            break;
+        }
+        case 3: {
+            int valor;
+            if (estaVacia())
+            {
+                cout << "La lista esta vacia.\n" << endl;
                 cls();
                 break;
             }
-            case 3: {
-                int valor;
-                cout << "Ingrese el valor a eliminar: ";
-                valor = obtener_valido();
-                eliminar(valor);
-                cls();
-                break;
-            }
-            case 4:
-                display();
-                cls();
-                break;
-            case 5:
-                return 0;
-            default:
-                cout << "Opción no válida. Intente de nuevo." << endl;
+            cout << "Ingrese el valor a eliminar: ";
+            valor = obtener_valido();
+            eliminar(valor);
+            cls();
+            break;
+        }
+        case 4:
+            display();
+            cls();
+            break;
+        case 5:
+            return 0;
+        default:
+            cout << "\nOpción no válida. Intente de nuevo.\n" << endl;
+            cls();
         }
     }
 
     return 0;
 }
+
+// Ejecutar programa: Ctrl + F5 o menú Depurar > Iniciar sin depurar
+// Depurar programa: F5 o menú Depurar > Iniciar depuración
+
+// Sugerencias para primeros pasos: 1. Use la ventana del Explorador de soluciones para agregar y administrar archivos
+//   2. Use la ventana de Team Explorer para conectar con el control de código fuente
+//   3. Use la ventana de salida para ver la salida de compilación y otros mensajes
+//   4. Use la ventana Lista de errores para ver los errores
+//   5. Vaya a Proyecto > Agregar nuevo elemento para crear nuevos archivos de código, o a Proyecto > Agregar elemento existente para agregar archivos de código existentes al proyecto
+//   6. En el futuro, para volver a abrir este proyecto, vaya a Archivo > Abrir > Proyecto y seleccione el archivo .sln
